@@ -29,21 +29,93 @@
             max-width: 600px; /*nechat ať je to responzivní*/
             padding: 20px; 
         }
-        h1 {
+        h1, h2 {
             text-align: center;
             color: darkslategrey;
         }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: auto;
+            
+        }
+        button {
+            padding: 15px 20px;
+            background: #ce5a0c;
+            color: #fff;
+            font-size: 17px;
+            transition: background 0.3s, transform 0.3s;
+        }
+        button:hover{
+            background: #d77a16;
+            transform: translateY(-3px);
+            cursor: pointer;
+        }
+        button.correct{
+            background: green;
+        }
+        button.wrong{
+            background: red;
+        }
+        button.hide{
+            display:none;
+        }
+        #timer {
+            width: 100%;
+            background: #bdbdbd;
+            height: 10px;
+            margin-bottom: 15px;
+        }
+        #timer-bar {
+            height: 100%;
+            background-color: #6020c1;
+        }
+        #feedback{
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+            min-height: 25px;
+            color: #273849;
+        }
+        #progress {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #656565;
+        }
+        #audio-control {
+            text-align: center;
+            margin-top: 15px;
+        }
+        #start-screen {
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         height: 150px; 
+       }
+       #start-screen.hide {
+         display: none; /* skryje start*/
+       }
+       #start-btn {
+         font-size: 25px;
+         padding: 15px 30px;
+       }
+       @media (max-width: 480px) {      /*responzví design. max 480px an šířku - takže na mobil*/
+         .btn-grid { grid-template-columns: 16px; }
+         button    { font-size: 13px; } 
+         #start-btn { font-size: 16px; padding: 12px 24px; }
+       }
     </style>
 </head>
 <body>
     <div class="bg-image"></div>
-    <div id="quiz-container">
+    <div id="quiz-container"> <!-- vpodstate cely kviz-->
         <h1>Kvíz z české historie</h1>
 
-        <div id="start-screen">
+        <div id="start-screen"> <!-- start obrazovka-->
             <button id="start-btn" class="start-btn">Start</button>
         </div>
-      <div id="quiz" class="hide">
+      <div id="quiz" class="hide"> <!-- ať se může kvíz schovávat-->
       <div id="progress">Otázka 1/10</div>
       <div id="timer">
         <div id="timer-bar"></div>
@@ -55,17 +127,24 @@
       <div id="feedback"></div>
       <button id="next-btn" class="hide">Další</button>
     </div>
-    
-    <div id="history-screen" class="hide">
+     
+    <div id="result-screen" class="hide"> <!--výsledky-->
+      <h2>Výsledky kvízu</h2>
+      <p id="score-text"></p>
+      <button id="restart-btn">Znovu spustit kvíz</button>
+      <button id="history-btn">Historie výsledků</button>
+    </div>
+
+    <div id="history-screen" class="hide"> <!--historie her-->
       <h2>Historie výsledků</h2>
       <div id="history-list"></div>
       <button id="back-btn">Zpět</button>
     </div>
     
-    <div id="audio-control">
+    <div id="audio-control"> <!--audio vypnout zapnout-->
       <label><input type="checkbox" id="sound-toggle" checked> Zvukové efekty</label>
     </div>
   </div>
-  <script src="script.js"></script>
+  <script src="script.js"></script> <!--načtení toho komlikovaného javascriptu-->
 </body>
 </html>
