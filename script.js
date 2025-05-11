@@ -17,19 +17,252 @@ const quizData = [
     { question: "Kdy začala sametová revoluce?", options: ["1989", "1969", "1993", "1975"], correctAnswer: "1989" },
 ]
 
-const QuizModule = (function () {
-    let shuffledQuestions = [];  // promíchané otázky
-    let currentIndex = 0; //index aktuální otázky
-    let score = 0;
-    let timerInterval; //interval časovače
-    const MAX_TIME = 20; // kolik sekund na otázku
-    let timeLeft;
-    let soundEnabled = true; // zvuk ano/ne
+const QuizModule = (function() {
+  let shuffledQuestions = [];
+  let currentIndex = 0;
+  let score = 0;
+  let timerInterval;
+  const MAX_TIME = 20; // 20 sekund na otázku
+  let timeLeft;
+  let soundEnabled = true;
 
+  function shuffle(array) {
+    return [...array].sort(() => Math.random() - 0.5);
+  }
 
-    // promíchá pole
-    function shuffle(array) {
-        return [...array].sort(() => Math.random() - 0.5);
+  function init() {
+    score = 0;
+    shuffledQuestions = shuffle(quizData);
+    currentIndex = 0;
+    soundEnabled = document.getElementById('sound-toggle').checked;
+  }
+
+  function getCurrent() {
+    return shuffledQuestions[currentIndex];
+  }
+
+  function next() {
+    currentIndex++;
+    return currentIndex < shuffledQuestions.length;
+  }
+
+  function check(answer) {
+    const q = getCurrent();
+    const isCorrect = answer === q.correctAnswer;
+    if (isCorrect) score++;
+    return { isCorrect, correct: q.correctAnswer };
+  }
+
+  function startTimer(onTick, onEnd) {
+    timeLeft = MAX_TIME;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      timeLeft -= 0.1;
+      onTick((timeLeft / MAX_TIME) * 100);
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        onEnd();
+      }
+    }, 100);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  function play(type) {
+    if (!soundEnabled) return;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    osc.connect(ctx.destination);
+    if (type === 'correct') {
+      osc.frequency.value = 440;
+      osc.start();
+      osc.stop(ctx.currentTime + 0.3);
+    } else if (type === 'wrong') {
+      osc.frequency.value = 220;
+      osc.start();
+      osc.stop(ctx.currentTime + 0.3);
+    } else { // timeout
+      osc.frequency.value = 180;
+      osc.start();
+      osc.stop(ctx.currentTime + 0.5);
     }
+  }
 
-})
+  function save() {
+    const hist = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+    hist.push({ score, total: shuffledQuestions.length, date: new Date().toLocaleString('cs-CZ') });
+    localStorage.setItem('quizHistory', JSON.stringify(hist));
+  }
+
+  function history() {
+    return JSON.parse(localStorage.getItem('quizHistory') || '[]');
+  }
+
+  function getProgress() {
+    return { current: currentIndex + 1, total: shuffledQuestions.length };
+  }
+
+  function getScore() {
+    return score;
+  }
+
+  function setSoundEnabled(val) {
+    soundEnabled = val;
+  }
+
+  return {
+    init,
+    getCurrent,
+    next,
+    check,
+    startTimer,
+    stopTimer,
+    play,
+    save,
+    history,
+    getProgress,
+    getScore,
+    setSoundEnabled
+  };
+})();
+
+// Modul UI
+const UIModule = (function() {
+  const elems = {
+    startScreen: document.getElementById('start-screen'),
+    quiz: document.getElementById('quiz'),
+    result: document.getElementById('result-screen'),
+    history: document.getElementById('history-screen'),
+    startBtn: document.getElementById('start-btn'),
+    nextBtn: document.getElementById('next-btn'),
+    restartBtn: document.getElementById('restart-btn'),
+    historyBtn: document.getElementById('history-btn'),
+    backBtn: document.getElementById('back-btn'),
+    question: document.getElementById('question'),
+    answers: document.getElementById('answer-buttons'),
+    feedback: document.getElementById('feedback'),
+    timerBar: document.getElementById('timer-bar'),
+    progress: document.getElementById('progress'),
+    scoreText: document.getElementById('score-text'),
+    historyList: document.getElementById('history-list')
+  };
+
+  function switchScreen(screen) {
+    elems.startScreen.classList.toggle('hide', screen !== 'start');
+    elems.quiz.classList.toggle('hide', screen !== 'quiz');
+    elems.result.classList.toggle('hide', screen !== 'result');
+    elems.history.classList.toggle('hide', screen !== 'history');
+  }
+
+  function resetQuizUI() {
+    elems.nextBtn.classList.add('hide');
+    elems.feedback.innerText = '';
+    elems.answers.innerHTML = '';
+    elems.timerBar.style.width = '100%';
+  }
+
+  function updateProgress(current, total) {
+    elems.progress.innerText = `Otázka ${current}/${total}`;
+  }
+
+  function showQuestion(q) {
+    elems.question.innerText = q.question;
+    const opts = [...q.options].sort(() => Math.random() - 0.5);
+    opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.innerText = opt;
+      btn.addEventListener('click', () => handleAnswer(opt));
+      elems.answers.appendChild(btn);
+    });
+  }
+
+  function disableAnswers() {
+    Array.from(elems.answers.children).forEach(b => b.disabled = true);
+  }
+
+  function handleAnswer(opt) {
+    QuizModule.stopTimer();
+    disableAnswers();
+    const res = QuizModule.check(opt);
+    if (res.isCorrect) {
+      QuizModule.play('correct');
+      elems.feedback.innerText = 'Správně!';
+    } else {
+      QuizModule.play('wrong');
+      elems.feedback.innerText = `Špatně! Správná odpověď: ${res.correct}`;
+    }
+    elems.nextBtn.classList.remove('hide');
+  }
+
+  function handleTimeout() {
+    QuizModule.stopTimer();
+    QuizModule.play('timeout');
+    disableAnswers();
+    const correct = QuizModule.getCurrent().correctAnswer;
+    elems.feedback.innerText = `Čas vypršel! Správná odpověď: ${correct}`;
+    elems.nextBtn.classList.remove('hide');
+  }
+
+  function showResults() {
+    switchScreen('result');
+    const score = QuizModule.getScore();
+    elems.scoreText.innerText = `Získané body: ${score}`;
+  }
+
+  function showHistory() {
+    switchScreen('history');
+    elems.historyList.innerHTML = '';
+    const hist = QuizModule.history();
+    hist.slice().reverse().forEach(e => {
+      const div = document.createElement('div');
+      div.innerText = `${e.date}: ${e.score}/${e.total}`;
+      elems.historyList.appendChild(div);
+    });
+  }
+
+  return { elems, switchScreen, resetQuizUI, updateProgress, showQuestion, handleTimeout, showResults, showHistory };
+})();
+
+// Controller
+const Controller = (function(qm, ui) {
+  function init() {
+    const e = ui.elems;
+    e.startBtn.addEventListener('click', start);
+    e.nextBtn.addEventListener('click', () => {
+      if (qm.next()) load();
+      else { qm.save(); ui.showResults(); }
+    });
+    e.restartBtn.addEventListener('click', () => ui.switchScreen('start'));
+    e.historyBtn.addEventListener('click', ui.showHistory);
+    e.backBtn.addEventListener('click', () => ui.switchScreen('result'));
+    document.getElementById('sound-toggle').addEventListener('change', e => qm.setSoundEnabled(e.target.checked));
+  }
+
+  function start() {
+    qm.init();
+    ui.switchScreen('quiz');
+    load();
+  }
+
+  function load() {
+    ui.resetQuizUI();
+    const q = qm.getCurrent();
+    const prog = qm.getProgress();
+    ui.updateProgress(prog.current, prog.total);
+    showQuestionUI(q);
+    qm.startTimer(pct => ui.elems.timerBar.style.width = pct + '%', ui.handleTimeout);
+  }
+
+  function showQuestionUI(question) {
+    ui.showQuestion(question);
+  }
+
+  return { init };
+})(QuizModule, UIModule);
+
+// Spuštění aplikace po načtení DOM
+document.addEventListener('DOMContentLoaded', () => {
+  Controller.init();
+});
