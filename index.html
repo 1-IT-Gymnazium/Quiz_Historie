@@ -43,6 +43,29 @@
         <div id="start-screen">
             <button id="start-btn" class="start-btn">Start</button>
         </div>
-    <script src="script.js"></script>
+      <div id="quiz" class="hide">
+      <div id="progress">Otázka 1/10</div>
+      <div id="timer">
+        <div id="timer-bar"></div>
+      </div>
+      <div id="question-container">
+        <div id="question"></div>
+        <div id="answer-buttons" class="btn-grid"></div>
+      </div>
+      <div id="feedback"></div>
+      <button id="next-btn" class="hide">Další</button>
+    </div>
+    
+    <div id="history-screen" class="hide">
+      <h2>Historie výsledků</h2>
+      <div id="history-list"></div>
+      <button id="back-btn">Zpět</button>
+    </div>
+    
+    <div id="audio-control">
+      <label><input type="checkbox" id="sound-toggle" checked> Zvukové efekty</label>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
