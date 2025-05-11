@@ -15,7 +15,7 @@ const quizData = [
     { question: "Kdy byl Vítězný únor?", options: ["1948", "1945", "1953", "1938"], correctAnswer: "1948" },
     { question: "Kdy začalo Pražské jaro?", options: ["1968", "1977", "1945", "1989"], correctAnswer: "1968" },
     { question: "Kdy začala sametová revoluce?", options: ["1989", "1969", "1993", "1975"], correctAnswer: "1989" },
-]
+];
 
 const QuizModule = (function() {
   let shuffledQuestions = [];
