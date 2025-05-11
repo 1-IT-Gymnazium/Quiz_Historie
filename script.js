@@ -1,32 +1,43 @@
-// KVÍZOVÁ DATA 
+// kvízová data
 const quizData = [
-  // Každý objekt reprezentuje jednu otázku s možnostmi a správnou odpovědí
-  { question: "Kdo vydal Zlatou bulu sicilskou?", options: ["Fridrich II.", "Karel IV.", "Václav III.", "Rudolf II."], correctAnswer: "Fridrich II." },
-  // ... (další otázky) ...
+    { question: "Kdo vydal Zlatou bulu sicilskou?", options: ["Fridrich II.", "Karel IV.", "Václav III.", "Rudolf II."], correctAnswer: "Fridrich II." },
+    { question: "Kdo vedl husity u Domažlic?", options: ["Prokop Holý", "Jan Žižka", "Jiří z Poděbrad", "Jan Amos Komenský"], correctAnswer: "Prokop Holý" },
+    { question: "Kdy vznikla Karlova univerzita?", options: ["1348", "1415", "1526", "1620"], correctAnswer: "1348" },
+    { question: "Kolik bylo pražských defenestrací?", options: ["Tři", "Jedna", "Dvě", "Čtyři"], correctAnswer: "Tři" },
+    { question: "Kdy se odehrála bitva na Bílé hoře?", options: ["1620", "1618", "1648", "1600"], correctAnswer: "1620" },
+    { question: "Kdo vládl českým zemím po roce 1620?", options: ["Habsburkové", "Jagellonci", "Lucemburkové", "Přemyslovci"], correctAnswer: "Habsburkové" },
+    { question: "Kým byl František Palacký?", options: ["Historikem", "Knězem", "Králem", "Generálem"], correctAnswer: "Historikem" },
+    { question: "Kdy proběhla revoluce v Praze?", options: ["1848", "1791", "1866", "1905"], correctAnswer: "1848" },
+    { question: "Kdy vzniklo Československo?", options: ["1918", "1928", "1939", "1945"], correctAnswer: "1918" },
+    { question: "Kdy byla podepsána Mnichovská dohoda?", options: ["1938", "1935", "1941", "1948"], correctAnswer: "1938" },
+    { question: "Kdy Němci obsadili Československo?", options: ["1939", "1936", "1942", "1944"], correctAnswer: "1939" },
+    { question: "Kdo provedl atentát na Heydricha?", options: ["Gabčík a Kubiš", "Žižka a Prokop", "Beneš a Štefánik", "Mašín a Morávek"], correctAnswer: "Gabčík a Kubiš" },
+    { question: "Kdy byl Vítězný únor?", options: ["1948", "1945", "1953", "1938"], correctAnswer: "1948" },
+    { question: "Kdy začalo Pražské jaro?", options: ["1968", "1977", "1945", "1989"], correctAnswer: "1968" },
+    { question: "Kdy začala sametová revoluce?", options: ["1989", "1969", "1993", "1975"], correctAnswer: "1989" },
 ];
-
-// LOGIKA KVÍZU 
+//logika kvízu
 const QuizModule = (function() {
-  // Vnitřní proměnné modulu
-  let shuffledQuestions = []; // otazky v náhodném pořadí
-  let currentIndex = 0;       // index aktuální otázky
-  let score = 0;              // skóre uživatele
-  let timerInterval;         // identifikátor časovače
-  const MAX_TIME = 20;       // limit na odpověď (v sekundách)
+    // Vnitřní proměnné modulu
+  let shuffledQuestions = [];// otazky v náhodném pořadí
+  let currentIndex = 0;// index aktuální otázky
+  let score = 0;   // skóre uživatele
+  let timerInterval; // identifikátor časovače
+  const MAX_TIME = 20; // 20 sekund na otázku
   let timeLeft;
-  let soundEnabled = true;   // jestli je zapnutý zvuk
+  let soundEnabled = true;// jestli je zapnutý zvuk
 
-  // Pomocná funkce pro zamíchání otázek nebo odpovědí
+  // funkce pro zamíchání otázek nebo odpovědí
   function shuffle(array) {
     return [...array].sort(() => Math.random() - 0.5);
   }
 
-  // Inicializace kvízu
+ // Inicializace kvízu
   function init() {
     score = 0;
-    shuffledQuestions = shuffle(quizData); // náhodné pořadí otázek
+    shuffledQuestions = shuffle(quizData);
     currentIndex = 0;
-    soundEnabled = document.getElementById('sound-toggle').checked; // stav zvuku z checkboxu
+    soundEnabled = document.getElementById('sound-toggle').checked;
   }
 
   // Vrací aktuální otázku
@@ -34,7 +45,7 @@ const QuizModule = (function() {
     return shuffledQuestions[currentIndex];
   }
 
-  // Posune se na další otázku, vrací true pokud existuje další
+    // Posune se na další otázku, vrací true pokud existuje další
   function next() {
     currentIndex++;
     return currentIndex < shuffledQuestions.length;
@@ -48,25 +59,25 @@ const QuizModule = (function() {
     return { isCorrect, correct: q.correctAnswer };
   }
 
-  // Spuštění časovače, který volá zpětné funkce při každém ticku a na konci
+    // Spuštění časovače, který volá zpětné funkce při každém ticku a na konci
   function startTimer(onTick, onEnd) {
     timeLeft = MAX_TIME;
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
       timeLeft -= 0.1;
-      onTick((timeLeft / MAX_TIME) * 100); // aktualizace % průběhu
+      onTick((timeLeft / MAX_TIME) * 100);// aktualizace % průběhu
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         onEnd(); // volání funkce při vypršení času
       }
-    }, 100); // každých 100ms (pro plynulý pohyb)
+    }, 100);  // každých 100ms (pro plynulý pohyb)
   }
 
   function stopTimer() {
     clearInterval(timerInterval);
   }
 
-  // Přehrání zvuku 
+  // Přehrání zvuku
   function play(type) {
     if (!soundEnabled) return;
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -94,27 +105,27 @@ const QuizModule = (function() {
     localStorage.setItem('quizHistory', JSON.stringify(hist));
   }
 
-  // Načtení historie výsledků
+    // Načtení historie výsledků
   function history() {
     return JSON.parse(localStorage.getItem('quizHistory') || '[]');
   }
 
-  // Vrací průběh kvízu
+    // Vrací průběh kvízu
   function getProgress() {
     return { current: currentIndex + 1, total: shuffledQuestions.length };
   }
 
-  // Vrací skóre
+    // Vrací skóre
   function getScore() {
     return score;
   }
 
-  // Nastavení zvuku
+    // Nastavení zvuku
   function setSoundEnabled(val) {
     soundEnabled = val;
   }
 
-  // Veřejné věci
+  // Veřejné API
   return {
     init,
     getCurrent,
@@ -131,10 +142,9 @@ const QuizModule = (function() {
   };
 })();
 
-// UI 
+// Modul UI
 const UIModule = (function() {
   const elems = {
-    // Uložení všech relevantních prvků DOM
     startScreen: document.getElementById('start-screen'),
     quiz: document.getElementById('quiz'),
     result: document.getElementById('result-screen'),
@@ -153,7 +163,7 @@ const UIModule = (function() {
     historyList: document.getElementById('history-list')
   };
 
-  // Přepínání mezi obrazovkami
+    // Přepínání mezi obrazovkami
   function switchScreen(screen) {
     elems.startScreen.classList.toggle('hide', screen !== 'start');
     elems.quiz.classList.toggle('hide', screen !== 'quiz');
@@ -169,15 +179,15 @@ const UIModule = (function() {
     elems.timerBar.style.width = '100%';
   }
 
-  // Aktualizace počitadla otázky
+    // Aktualizace počitadla otázky
   function updateProgress(current, total) {
     elems.progress.innerText = `Otázka ${current}/${total}`;
   }
 
-  // Zobrazení otázky a vytvoření odpovědních tlačítek
+    // Zobrazení otázky a vytvoření odpovědních tlačítek
   function showQuestion(q) {
     elems.question.innerText = q.question;
-    const opts = [...q.options].sort(() => Math.random() - 0.5); // zamíchání odpovědí
+    const opts = [...q.options].sort(() => Math.random() - 0.5);
     opts.forEach(opt => {
       const btn = document.createElement('button');
       btn.innerText = opt;
@@ -186,7 +196,7 @@ const UIModule = (function() {
     });
   }
 
-  // Zamezení opětovnému klikání na odpovědi
+    // Zamezení opětovnému klikání na odpovědi
   function disableAnswers() {
     Array.from(elems.answers.children).forEach(b => b.disabled = true);
   }
@@ -206,7 +216,7 @@ const UIModule = (function() {
     elems.nextBtn.classList.remove('hide');
   }
 
-  // Zpracování vypršení času
+    // Zpracování vypršení času
   function handleTimeout() {
     QuizModule.stopTimer();
     QuizModule.play('timeout');
@@ -238,11 +248,11 @@ const UIModule = (function() {
   return { elems, switchScreen, resetQuizUI, updateProgress, showQuestion, handleTimeout, showResults, showHistory };
 })();
 
-//  KONTROLER APLIKACE 
+// kontroler aplikace
 const Controller = (function(qm, ui) {
   function init() {
     const e = ui.elems;
-    // Při kliknutí na tlačítka volá příslušné akce
+    // Při kliknutí na tlačítka volá
     e.startBtn.addEventListener('click', start);
     e.nextBtn.addEventListener('click', () => {
       if (qm.next()) load();
@@ -278,7 +288,7 @@ const Controller = (function(qm, ui) {
   return { init };
 })(QuizModule, UIModule);
 
-// SPUŠTĚNÍ PO NAČTENÍ DOM 
+// Spuštění aplikace po načtení DOM
 document.addEventListener('DOMContentLoaded', () => {
   Controller.init();
 });
