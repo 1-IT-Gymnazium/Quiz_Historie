@@ -7,7 +7,7 @@ const quizData = [
     { question: "Kdy se odehrála bitva na Bílé hoře?", options: ["1620", "1618", "1648", "1600"], correctAnswer: "1620" },
     { question: "Kdo vládl českým zemím po roce 1620?", options: ["Habsburkové", "Jagellonci", "Lucemburkové", "Přemyslovci"], correctAnswer: "Habsburkové" },
     { question: "Kým byl František Palacký?", options: ["Historikem", "Knězem", "Králem", "Generálem"], correctAnswer: "Historikem" },
-    { question: "Kdy proběhla revoluce v Praze?", options: ["1848", "1791", "1866", "1905"], correctAnswer: "1848" },
+    { question: "Kdy proběhla revoluce v Praze? (Pražské červnové povstání)", options: ["1848", "1791", "1866", "1905"], correctAnswer: "1848" },
     { question: "Kdy vzniklo Československo?", options: ["1918", "1928", "1939", "1945"], correctAnswer: "1918" },
     { question: "Kdy byla podepsána Mnichovská dohoda?", options: ["1938", "1935", "1941", "1948"], correctAnswer: "1938" },
     { question: "Kdy Němci obsadili Československo?", options: ["1939", "1936", "1942", "1944"], correctAnswer: "1939" },
