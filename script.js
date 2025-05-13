@@ -206,15 +206,27 @@ const UIModule = (function() {
     QuizModule.stopTimer();
     disableAnswers();
     const res = QuizModule.check(opt);
+
+    // Projdi všechna tlačítka
+    Array.from(elems.answers.children).forEach(button => {
+        if (button.innerText === res.correct) {
+            button.classList.add('correct');
+        } else if (button.innerText === opt) {
+            button.classList.add('wrong');
+        }
+    });
+
+    // Zvuk + zpětná vazba
     if (res.isCorrect) {
-      QuizModule.play('correct');
-      elems.feedback.innerText = 'Správně!';
+        QuizModule.play('correct');
+        elems.feedback.innerText = 'Správně!';
     } else {
-      QuizModule.play('wrong');
-      elems.feedback.innerText = `Špatně! Správná odpověď: ${res.correct}`;
+        QuizModule.play('wrong');
+        elems.feedback.innerText = `Špatně! Správná odpověď: ${res.correct}`;
     }
+
     elems.nextBtn.classList.remove('hide');
-  }
+}
 
     // Zpracování vypršení času
   function handleTimeout() {
