@@ -39,13 +39,14 @@
         }
 
         #quiz-container {
-            border-radius: 6px;
+            border-radius: 16px;
             background-color: #ffff;
             width: 90%;
             max-width: 700px;
             /*nechat ať je to responzivní*/
             padding: 20px;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6); /* bílá záře */
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+            /* bílá záře */
         }
 
         h1,
@@ -134,20 +135,33 @@
             height: 150px;
         }
 
+        #start-screen label {
+            display: inline-block;
+            margin-top: 12px;
+        }
+
         #start-screen.hide {
             display: none;
             /* skryje start*/
         }
 
         #start-btn {
-            font-size: 25px;
-            padding: 15px 30px;
+            font-size: 30px;
+            padding: 17px 80px;
         }
 
         #question {
             padding-bottom: 15px;
             font-size: large;
         }
+
+        #description {
+            padding-top: 0px;
+            padding-bottom: 20px;
+            text-align: center;
+
+        }
+
 
         @media (max-width: 480px) {
 
@@ -207,10 +221,14 @@
             <div id="history-list"></div>
             <button id="back-btn">Zpět</button>
         </div>
+        <div id="description">
+            <p>Na každou otázku je limit 20s, získejte co nejvíc správných odpovědí. Vaše skóre se uloží a tak můžete porovnávat svoje výkony.</p>
+        </div>
 
         <div id="audio-control"> <!--audio vypnout zapnout-->
             <label><input type="checkbox" id="sound-toggle" checked> Zvukové efekty</label>
         </div>
+
     </div>
     <script src="script.js"></script> <!--načtení toho komlikovaného javascriptu-->
 </body>

@@ -146,6 +146,7 @@ const QuizModule = (function() {
 const UIModule = (function() {
   const elems = {
     startScreen: document.getElementById('start-screen'),
+    description: document.getElementById('description'),
     quiz: document.getElementById('quiz'),
     result: document.getElementById('result-screen'),
     history: document.getElementById('history-screen'),
@@ -166,6 +167,7 @@ const UIModule = (function() {
     // Přepínání mezi obrazovkami
   function switchScreen(screen) {
     elems.startScreen.classList.toggle('hide', screen !== 'start');
+    elems.description.classList.toggle('hide', screen !== 'start');
     elems.quiz.classList.toggle('hide', screen !== 'quiz');
     elems.result.classList.toggle('hide', screen !== 'result');
     elems.history.classList.toggle('hide', screen !== 'history');
